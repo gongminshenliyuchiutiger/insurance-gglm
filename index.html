@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stardust Companion | AI神賦能：運用 NotebookLM 設計「住宅地震保險」跨領域課程</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Stardust Companion Theme --- */
+        :root {
+            --bg-deep-space: #0b0c1e;
+            --container-bg: rgba(20, 22, 49, 0.85);
+            --primary-glow: #00ffff; /* Cyan */
+            --secondary-glow: #ff00ff; /* Magenta */
+            --accent-gold: #ffd700;
+            --text-bright: #e0e1ff;
+            --text-dim: #a0a3c4;
+            --border-color: rgba(0, 255, 255, 0.3);
+            --success-green: #00ff7f;
+            --font-display: 'Orbitron', 'Noto Sans TC', sans-serif;
+            --font-body: 'Noto Sans TC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+        }
+
+        @keyframes stars-bg {
+            from { transform: translateY(0px); }
+            to   { transform: translateY(-2000px); }
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            color: var(--text-bright);
+            background-color: var(--bg-deep-space);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        #starfield, #starfield2, #starfield3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: -1;
+            background-repeat: repeat;
+        }
+        #starfield {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBjeD0iNjciIGN5PSI2NyIgcj0iMiIvPjxjaXJjbGUgZmlsbD0iI0ZGRkZGRiIgY3g9IjMzIiBjeT0iMzMiIHI9IjIiLz48L3N2Zz4=');
+            animation: stars-bg 400s linear infinite, twinkle 5s ease-in-out infinite;
+        }
+        #starfield2 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBjeD0iMTYiIGN5PSI4MyIgcj0iMS41Ii8+PGNpcmNsZSBmaWxsPSIjRkZGRkZGRiIgY3g9Ijg3IiBjeT0iMTMiIHI9IjEuNSIvPjwvc3ZnPg==');
+            animation: stars-bg 200s linear infinite;
+        }
+        #starfield3 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBjeD0iNDIiIGN5PSI4IiByPSIxIi8+PGNpcmNsZSBmaWxsPSIjRkZGRkZGRiIgY3g9Ijg4IiBjeT0iNDgiIHI9IjEiLz48Y2lyY2xlIGZpbGw9IiNGRkZGRkYiIGN4PSI4IiBjeT0iNjIiIHI9IjEiLz48L3N2Zz4=');
+            animation: stars-bg 100s linear infinite;
+        }
+        
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px 50px;
+            box-shadow: 0 0 25px -5px var(--primary-glow), inset 0 0 20px -10px var(--primary-glow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        header {
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: 0 5px 20px -10px var(--primary-glow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title-group { text-align: left; }
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            line-height: 1.3;
+            font-family: var(--font-display);
+            color: var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+        header h1 i { margin-right: 15px; }
+        header .presenter {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 15px;
+            font-weight: 400;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            color: var(--text-bright);
+        }
+        header .presenter i { margin-right: 8px; color: var(--accent-gold); }
+
+        .section-title {
+            font-size: 2.3em;
+            color: var(--text-bright);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow)) 1;
+            padding-bottom: 15px;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            font-family: var(--font-display);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+        .section-title i { margin-right: 15px; }
+
+        .step-box {
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: rgba(11, 12, 30, 0.5);
+            box-shadow: 0 0 10px -5px var(--border-color);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .step-box:hover {
+            box-shadow: 0 0 15px -2px var(--primary-glow);
+            transform: translateY(-5px);
+        }
+        .step-header {
+            background-color: rgba(0, 255, 255, 0.1);
+            padding: 15px 25px;
+            font-weight: 700;
+            font-size: 1.4em;
+            color: var(--primary-glow);
+            border-bottom: 1px solid var(--border-color);
+            text-shadow: 0 0 3px var(--primary-glow);
+        }
+        .step-header i { margin-right: 12px; }
+        .step-content { padding: 25px; }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 1.15em;
+            color: var(--accent-gold);
+            display: block;
+            margin-bottom: 10px;
+        }
+        .instruction {
+            margin-left: 0;
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 3px solid var(--secondary-glow);
+            color: var(--text-dim);
+        }
+        .instruction a { color: var(--primary-glow); text-decoration: none; transition: all 0.2s; }
+        .instruction a:hover { color: white; text-shadow: 0 0 5px var(--primary-glow); }
+        .instruction b, .instruction strong { color: var(--text-bright); }
+        
+        .copy-container { position: relative; margin: 10px 0; }
+        .copy-box {
+            background-color: rgba(11, 12, 30, 0.8);
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            border-radius: 6px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.1em;
+            color: var(--success-green);
+            word-wrap: break-word;
+            line-height: 1.6;
+            padding-right: 50px;
+            box-shadow: inset 0 0 10px -5px var(--primary-glow);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            background-color: transparent;
+            color: var(--primary-glow);
+            border: 1px solid transparent;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: rgba(0, 255, 255, 0.2);
+            border-color: var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary-glow);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .copy-btn.copied { color: var(--success-green); }
+
+        .screen-ref, .important-note {
+            padding: 15px 20px; margin: 20px 0; border-radius: 8px; border: 1px solid;
+        }
+        .screen-ref { /* Tip */
+            background-color: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.5);
+            color: var(--accent-gold);
+        }
+        .screen-ref::before {
+            font-family: "Font Awesome 6 Free"; content: '\f0eb '; font-weight: 900; margin-right: 10px;
+        }
+        .important-note { /* Info */
+            background-color: rgba(255, 0, 255, 0.1);
+            border-color: rgba(255, 0, 255, 0.5);
+            color: var(--text-bright);
+        }
+        .important-note::before {
+             font-family: "Font Awesome 6 Free"; content: '\f05a '; font-weight: 900; margin-right: 10px; color: var(--secondary-glow);
+        }
+        .important-note strong, .screen-ref strong { color: white; }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            color: var(--text-dim);
+            font-size: 0.95em;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #mascot {
+            position: fixed; bottom: 25px; right: 25px; width: 120px;
+            z-index: 2020; transition: transform 0.2s ease-in-out, opacity 0.3s ease; cursor: pointer;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+        }
+        #mascot:hover { transform: scale(1.1) translateY(-5px); filter: drop-shadow(0 0 15px var(--accent-gold)); }
+        #mascot img { width: 100%; height: auto; display: block; }
+
+        /* --- Presentation Mode --- */
+        #toggle-mode-btn {
+            background: transparent;
+            color: var(--primary-glow);
+            border: 2px solid var(--primary-glow);
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-shadow: 0 0 3px var(--primary-glow);
+        }
+        #toggle-mode-btn:hover {
+            background-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px var(--primary-glow);
+            transform: scale(1.05);
+        }
+        #presentation-controls {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: rgba(0, 0, 0, 0.7); color: white;
+            display: flex; justify-content: center; align-items: center;
+            padding: 15px 0; z-index: 2000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        #presentation-controls button {
+            background: none; border: 2px solid white; color: white;
+            font-size: 1.2em; padding: 8px 18px; margin: 0 20px;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        #presentation-controls button:hover:not(:disabled) {
+             background-color: rgba(0, 255, 255, 0.3); border-color: var(--primary-glow);
+             color: var(--primary-glow); box-shadow: 0 0 10px var(--primary-glow);
+        }
+        #presentation-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        #exit-presentation-btn {
+            position: fixed; top: 25px; right: 35px; width: 44px; height: 44px;
+            background-color: rgba(0, 0, 0, 0.6); color: white; border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%; font-size: 2em; font-weight: 300; cursor: pointer;
+            z-index: 2010; display: flex; align-items: center; justify-content: center;
+            padding-bottom: 4px; box-sizing: border-box;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; transform: scale(0.5);
+        }
+        #exit-presentation-btn:hover {
+            background-color: var(--secondary-glow); border-color: #fff;
+            transform: scale(1.1) rotate(90deg); box-shadow: 0 0 15px var(--secondary-glow);
+        }
+
+        body.presentation-mode { background-color: var(--bg-deep-space); overflow: hidden; }
+        body.presentation-mode .container {
+            max-width: 100%; width: 100%; height: 100vh; padding: 0; margin: 0;
+            border: none; border-radius: 0; background-color: transparent;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            box-shadow: none; backdrop-filter: none;
+        }
+        body.presentation-mode header,
+        body.presentation-mode footer,
+        body.presentation-mode #starfield, body.presentation-mode #starfield2, body.presentation-mode #starfield3 { display: none; }
+        
+        body.presentation-mode::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-deep-space) url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGNpcmNsZSBmaWxsPSIjRkZGRkZGIiBjeD0iMTYiIGN5PSI4MyIgcj0iMS41Ii8+PGNpcmNsZSBmaWxsPSIjRkZGRkZGRiIgY3g9Ijg3IiBjeT0iMTMiIHI9IjEuNSIvPjwvc3ZnPg==') repeat;
+            animation: stars-bg 200s linear infinite;
+            z-index: -1;
+        }
+        
+        body.presentation-mode #presentation-controls { opacity: 1; visibility: visible; }
+        body.presentation-mode #exit-presentation-btn { opacity: 1; visibility: visible; transform: scale(1); }
+        body.presentation-mode .slide { display: none; }
+        body.presentation-mode .slide.active {
+            display: block; width: 90%; max-width: 1200px; margin: 0 auto; padding: 50px;
+            background-color: var(--container-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; box-shadow: 0 0 25px -5px var(--primary-glow);
+            box-sizing: border-box; max-height: calc(100vh - 120px); overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        body.presentation-mode .section-title { font-size: 3.2em; text-align: center; }
+        body.presentation-mode .step-box { border: none; box-shadow: none; margin-bottom: 0; background: transparent; }
+        body.presentation-mode .step-content, body.presentation-mode .important-note, body.presentation-mode .instruction { font-size: 1.3em; line-height: 2; }
+        
+        /* Title Slide Styles */
+        .title-slide-container {
+            background: linear-gradient(145deg, var(--secondary-glow), var(--primary-glow));
+            color: var(--bg-deep-space); padding: 5% 8%; border-radius: 12px; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; text-align: left;
+            box-sizing: border-box;
+        }
+        .title-slide-h1 { font-size: 3.5em; margin: 0 0 15px 0; font-weight: 700; line-height: 1.2; font-family: var(--font-display); text-shadow: none;}
+        .title-slide-subtitle { font-size: 2.2em; opacity: 0.8; margin: 0; font-family: var(--font-body);}
+        .title-slide-separator { border-top: 2px solid rgba(11, 12, 30, 0.3); margin: 40px 0; width: 100%; }
+        .title-slide-presenter { font-size: 1.8em; opacity: 0.9; font-weight: 400; margin: 0; }
+        body:not(.presentation-mode) .title-slide-container { display: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            header { flex-direction: column; text-align: center; }
+            header .header-title-group { text-align: center; }
+            header h1 { font-size: 1.8em; }
+            .section-title { font-size: 1.9em; }
+            #mascot { width: 90px; bottom: 15px; right: 15px; }
+            .title-slide-h1 { font-size: 2.5em; }
+            .title-slide-subtitle { font-size: 1.5em; }
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="starfield"></div>
+    <div id="starfield2"></div>
+    <div id="starfield3"></div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <div class="container">
+        <header>
+            <div class="header-title-group">
+                <h1><i class="fa-solid fa-rocket"></i>AI神賦能：運用 NotebookLM 設計「住宅地震保險」跨領域課程</h1>
+                <p class="presenter"><i class="fa-solid fa-user-astronaut"></i>分享人：新北市立雙溪高中 邱俐瑜老師</p>
+            </div>
+            <button id="toggle-mode-btn">切換簡報模式</button>
+        </header>
+
+        <div class="slide">
+            <div class="title-slide-container">
+                <h1 class="title-slide-h1">AI神賦能：運用 NotebookLM 設計「住宅地震保險」跨領域課程</h1>
+                <p class="title-slide-subtitle">如何讓「保險」這門課變有趣？</p>
+                <div class="title-slide-separator"></div>
+                <p class="title-slide-presenter"><i class="fa-solid fa-user-astronaut"></i>分享人：新北市立雙溪高中 邱俐瑜老師</p>
+            </div>
+        </div>
+        
+        <h2 class="section-title slide"><i class="fa-solid fa-star-of-life"></i>Part 1：前言 - 如何讓「保險」這門課變有趣？</h2>
+        <div class="important-note slide">
+            <p><strong>【備課時可能會遇到挑戰】</strong></p>
+            <ul>
+                <li><strong>內容生硬：</strong>條文、數字、專有名詞多，如何轉化為學生感興趣的內容？</li>
+                <li><strong>教材繁多：</strong>手上有國小、國中、普高、技高等不同版本的師生手冊，如何快速掌握重點，並針對自己的學生設計課程？</li>
+                <li><strong>連結生活：</strong>如何讓學生真正「有感」，體會到住宅地震保險與他們生活息息相關？</li>
+            </ul>
+            <p><strong>NotebookLM 就是我們的解方：</strong>它能幫我們快速消化這些教材手冊，並根據我們的教學需求，生成創意的課程神點子。</p>
+        </div>
+        
+        <div class="step-box slide">
+            <div class="step-header"><i class="fa-solid fa-bullseye"></i>本課程任務目標</div>
+            <div class="step-content">
+                <ol>
+                    <li>學會如何將這批「住宅地震保險」PDF教材，建立成專屬知識庫。</li>
+                    <li>掌握提問技巧，快速比較不同學階教材的異同，抓出教學重點。</li>
+                    <li>實作一個完整的課程活動設計，將生硬的保險知識變成有趣的防災議題探討。</li>
+                    <li>體驗AI如何將我們從「資料整理員」變身為「課程創意總監」。</li>
+                </ol>
+            </div>
+        </div>
+
+        <h2 class="section-title slide"><i class="fa-solid fa-gears"></i>Part 2：Step-by-Step 實戰教學</h2>
+        
+        <div class="step-box slide">
+            <div class="step-header"><i class="fa-solid fa-database"></i>第一步：建立「住宅地震保險知識庫」</div>
+            <div class="step-content">
+                <span class="action-title">1. 事前準備：</span>
+                <div class="instruction">
+                    <p>請先從以下連結，下載您主要任教學階段的「教師手冊」與「學生手冊」PDF檔案到您的電腦桌面。<br>如果您是課程開發者或行政人員，可以全部下載。</p>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        <li><strong><i class="fa-solid fa-child" style="color:var(--accent-gold)"></i> 國小教材：</strong>
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E5%9C%8B%E5%B0%8F%E6%95%99%E5%B8%AB%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">教師手冊</a> | 
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E5%9C%8B%E5%B0%8F%E5%AD%B8%E7%94%9F%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">學生手冊</a>
+                        </li>
+                        <li style="margin-top: 10px;"><strong><i class="fa-solid fa-person" style="color:var(--accent-gold)"></i> 國中教材：</strong>
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E5%9C%8B%E4%B8%AD%E6%95%99%E5%B8%AB%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">教師手冊</a> | 
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E5%9C%8B%E4%B8%AD%E5%AD%B8%E7%94%9F%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">學生手冊</a>
+                        </li>
+                        <li style="margin-top: 10px;"><strong><i class="fa-solid fa-user-graduate" style="color:var(--accent-gold)"></i> 普通型高中教材：</strong>
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E6%99%AE%E9%80%9A%E5%9E%8B%E9%AB%98%E4%B8%AD%E6%95%99%E5%B8%AB%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">教師手冊</a> | 
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E6%99%AE%E9%80%9A%E5%9E%8B%E9%AB%98%E4%B8%AD%E5%AD%B8%E7%94%9F%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">學生手冊</a>
+                        </li>
+                        <li style="margin-top: 10px;"><strong><i class="fa-solid fa-user-gear" style="color:var(--accent-gold)"></i> 技術型高中教材：</strong>
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E6%8A%80%E8%A1%93%E5%9E%8B%E9%AB%98%E4%B8%AD%E6%95%99%E5%B8%AB%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">教師手冊</a> | 
+                            <a href="https://rm.ib.gov.tw/FileSystem/FKLDoc/113%E4%BD%8F%E5%AE%85%E5%9C%B0%E9%9C%87%E4%BF%9D%E9%9A%AA%E6%8A%80%E8%A1%93%E5%9E%8B%E9%AB%98%E4%B8%AD%E5%AD%B8%E7%94%9F%E6%89%8B%E5%86%8A.pdf" target="_blank" rel="noopener noreferrer">學生手冊</a>
+                        </li>
+                    </ul>
+                </div>
+                <span class="action-title">2. 進入 NotebookLM 並建立專案：</span>
+                <div class="instruction">
+                   <ul>
+                       <li>前往 <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">notebooklm.google.com</a> 並登入。</li>
+                       <li>點擊左上角「<b>+ 新增</b>」，新增一本筆記本。</li>
+                       <li>將筆記本命名為：
+                           <div class="copy-container">
+                               <div class="copy-box" style="font-family: var(--font-body); font-size: 1.1em; color: var(--text-bright);">住宅地震險寶課程設計神助理</div>
+                               <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                           </div>
+                       </li>
+                   </ul>
+                </div>
+                <span class="action-title">3. 上傳教材來源 (Sources)：</span>
+                <div class="instruction">
+                    在左側「來源 (Sources)」區塊，點擊「<b>+ 新增</b>」，將已下載的「教師手冊」與「學生手冊」PDF檔案上傳，或是選擇連結的「網站」將網址貼上。
+                </div>
+                <div class="important-note">
+                    <p><strong>【教學心法】</strong><br>現在，你的NotebookLM已經成為一位只懂「住宅地震保險」的專家了！它所有的回答，都會圍繞著所提供給他的教材手冊內容，確保內容的準確性。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-box slide">
+            <div class="step-header"><i class="fa-solid fa-magnifying-glass-chart"></i>第二步：AI 幫你讀教材、抓重點</div>
+            <div class="step-content">
+                <p class="instruction">上傳完成後，即可開始對AI提問，讓它幫我們快速消化內容。<br>請在下方對話框，試著輸入以下提示詞(咒語Prompt)：</p>
+                
+                <span class="action-title">1. 快速摘要 (Summarize)：</span>
+                <div class="copy-container">
+                    <div class="copy-box">根據我上傳的教師與學生手冊，摘要出「住宅地震基本保險」最重要的五個知識點。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">條列出這份教材中，學生必須了解的核心概念。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <span class="action-title">2. 比較異同 (Compare)：(適合上傳多份文件的狀態)</span>
+                 <div class="copy-container">
+                    <div class="copy-box">比較普通型高中學生手冊和技術型高中學生手冊，對於「理賠流程」的說明有何詳細程度的差異？</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">普通型高中和技術型高中的教師手冊，在建議的教學活動上有什麼不同？</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <span class="action-title">3. 鎖定關鍵資訊 (Find Specifics)：</span>
+                <div class="copy-container">
+                    <div class="copy-box">從所有文件中，找出關於「臨時住宿費用」的理賠金額與條件是什麼？</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">「住宅地震基本保險」的承保範圍涵蓋哪些項目？哪些又屬於「不保項目」？請用表格整理出來。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="screen-ref">記得點擊回答旁邊的 <strong>數字角標</strong>，看看 AI 是如何有憑有據地幫忙定位到原文出處！</div>
+            </div>
+        </div>
+        
+        <div class="step-box slide">
+            <div class="step-header"><i class="fa-solid fa-wand-magic-sparkles"></i>第三步：從知識到教學，生成創意課程</div>
+            <div class="step-content">
+                <div class="screen-ref">關鍵在於加入「<strong>教學情境</strong>」和「<strong>扮演角色</strong>」。</div>
+
+                <span class="action-title">1. 設計引起動機 (Brainstorm Warm-ups)：</span>
+                <div class="copy-container">
+                    <div class="copy-box">你是一位公民課老師，面對一群對保險無感的高中生。請根據手冊內容，設計一個 10 分鐘的「破冰活動」，用一個生活化的情境故事（例如：知名網紅的家鄉因地震受損）來引起他們對住宅地震險的興趣。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">為技術型高中學生設計三個提問，引導他們思考「如果我們家因為大地震不能住了，該怎麼辦？」，並將話題帶到「住宅地震保險」。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <span class="action-title">2. 發想核心活動 (Develop Activities)：</span>
+                <div class="copy-container">
+                    <div class="copy-box">你是一位擅長活動設計的老師。請為技術型高中學生設計一個50分鐘的「家庭防災會議」角色扮演活動。學生需分組扮演不同家庭成員，參考學生手冊的內容，討論萬一發生大地震，住宅地震險可以在哪方面提供幫助。請提供詳細的活動流程、角色卡和學習單草稿。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">請結合地理課教過的「臺灣地震帶分佈」，和公民課的「風險管理」概念，設計一個專題探究任務，讓技術型高中的學生研究自己學區的地震風險，並產出一份報告，評估為自家投保住宅地震險的必要性與成本效益。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <span class="action-title">3. 產出評量與素材 (Create Assessments & Materials)：</span>
+                 <div class="copy-container">
+                    <div class="copy-box">根據技術型高中學生手冊，幫我出 3 道情境題，需要包含保障範圍、理賠金額計算或是不保事項的判斷，用來評估學生是否真正理解課程內容。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="copy-container">
+                    <div class="copy-box">幫我把學生手冊中「理賠申請流程」的文字，轉換成一張清晰易懂的視覺化流程圖（請用文字描述流程圖的步驟與箭頭指向）。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <span class="action-title">4. 生成完整教案 (Generate Lesson Plan)：</span>
+                <div class="copy-container">
+                    <div class="copy-box">總結以上所有討論，請為我生成一份適用於技術型高中學生的「認識住宅地震保險」單元教案。格式須包含：單元目標、教學時數（50分鐘）、教學流程（引起動機、發展活動、綜合活動）與評量方式。</div>
+                    <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                 <div class="screen-ref">看到滿意的回答，可以點擊「<i class="fa-solid fa-thumbtack"></i>」圖示，將它保存到右側的筆記區！</div>
+            </div>
+        </div>
+
+        <h2 class="section-title slide"><i class="fa-solid fa-lightbulb"></i>提醒與心法</h2>
+        <div class="important-note slide">
+             <ul>
+                <li><strong>AI助消化：</strong>AI提供的點子尚需要用專業來判斷、修改、深化。</li>
+                <li><strong>垃圾進，垃圾出：</strong>給 AI 的資料越精準，它回饋的品質就越高。</li>
+                <li><strong>持續對話：</strong> 把 AI 當成你的教學夥伴，不斷追問、要求，直到產出滿意的結果為止。</li>
+            </ul>
+        </div>
+             
+        <footer>
+            <p>Copyright © Liyuchiutiger Gongminshen</p>
+        </footer>
+    </div>
+    
+    <div id="mascot">
+        <img src="image/LiyuChill.svg" alt="鯉魚邱老虎">
+    </div>
+
+    <button id="exit-presentation-btn" title="離開簡報模式 (Esc)">&times;</button>
+
+    <div id="presentation-controls">
+        <button id="prev-slide-btn">‹ 上一張</button>
+        <span id="slide-counter"></span>
+        <button id="next-slide-btn">下一張 ›</button>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 簡報模式控制 ---
+        const body = document.body;
+        const toggleBtn = document.getElementById('toggle-mode-btn');
+        const prevBtn = document.getElementById('prev-slide-btn');
+        const nextBtn = document.getElementById('next-slide-btn');
+        const slideCounter = document.getElementById('slide-counter');
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const exitPresentationBtn = document.getElementById('exit-presentation-btn');
+        let currentSlideIndex = 0;
+        let isPresentationMode = false;
+        let originalScrollPosition = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide) => slide.classList.remove('active'));
+            const currentSlide = slides[index];
+            if (currentSlide) {
+                currentSlide.classList.add('active');
+                currentSlide.scrollTop = 0;
+            }
+            slideCounter.textContent = `第 ${index + 1} / ${slides.length} 頁`;
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length - 1);
+        }
+
+        function enterPresentationMode() {
+            isPresentationMode = true;
+            originalScrollPosition = window.pageYOffset;
+            body.classList.add('presentation-mode');
+            toggleBtn.textContent = '返回講義模式';
+            currentSlideIndex = 0; 
+            showSlide(currentSlideIndex);
+            window.scrollTo(0, 0);
+        }
+
+        function exitPresentationMode() {
+            isPresentationMode = false;
+            body.classList.remove('presentation-mode');
+            toggleBtn.textContent = '切換簡報模式';
+            slides.forEach(slide => slide.classList.remove('active'));
+            window.scrollTo(0, originalScrollPosition);
+        }
+
+        function toggleMode() {
+            isPresentationMode ? exitPresentationMode() : enterPresentationMode();
+        }
+
+        function handleKeydown(e) {
+            if (!isPresentationMode) return;
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                if (currentSlideIndex < slides.length - 1) showSlide(++currentSlideIndex);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentSlideIndex > 0) showSlide(--currentSlideIndex);
+            } else if (e.key === 'Escape') {
+                exitPresentationMode();
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleMode);
+        nextBtn.addEventListener('click', () => { if (currentSlideIndex < slides.length - 1) showSlide(++currentSlideIndex); });
+        prevBtn.addEventListener('click', () => { if (currentSlideIndex > 0) showSlide(--currentSlideIndex); });
+        exitPresentationBtn.addEventListener('click', exitPresentationMode);
+        document.addEventListener('keydown', handleKeydown);
+
+        // --- 一鍵複製功能 (圖示切換) ---
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        copyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const textToCopy = button.dataset.copyText || button.previousElementSibling.innerText;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    button.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i>';
+                        button.classList.remove('copied');
+                        button.disabled = false;
+                    }, 1500);
+
+                }).catch(err => {
+                    console.error('複製失敗:', err);
+                });
+            });
+        });
+
+        // --- 吉祥物互動特效 (Stardust Edition) ---
+        const mascot = document.getElementById('mascot');
+        if (mascot && typeof confetti === 'function') {
+            const stardustColors = ['#00ffff', '#ff00ff', '#ffd700', '#ffffff', '#e0e1ff'];
+            mascot.addEventListener('click', (e) => {
+                const rect = mascot.getBoundingClientRect();
+                const origin = {
+                    x: (rect.left + rect.width / 2) / window.innerWidth,
+                    y: (rect.top + rect.height / 2) / window.innerHeight
+                };
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 90,
+                    origin: origin,
+                    colors: stardustColors,
+                    gravity: 0.5,
+                    drift: Math.random() - 0.5
+                });
+            });
+        }
+    });
+    </script>
+</body>
+</html>
